@@ -113,6 +113,9 @@ void Effects::SaveSettings()
 	swprintf_s( buffer, L"%d", SETTINGS.lightingType );
 	WritePrivateProfileStringW( L"Basic", L"LightingStyle", buffer, wcModulePath );
 
+	swprintf_s(buffer, L"%d", SETTINGS.hudScalingIncrease);
+	WritePrivateProfileStringW(L"Basic", L"HudScalingIncrease", buffer, wcModulePath);
+
 	// Advanced
 	WritePrivateProfileStructW( L"Advanced", L"Attribs", &SETTINGS.colorGradingAttributes[0], sizeof(float) * 3, wcModulePath );
 	WritePrivateProfileStructW( L"Advanced", L"Color1", &SETTINGS.colorGradingAttributes[1], sizeof(float) * 3, wcModulePath );
@@ -126,6 +129,7 @@ void Effects::LoadSettings()
 	SETTINGS.colorGradingEnabled = GetPrivateProfileIntW( L"Basic", L"EnableColorGrading", 1, wcModulePath );
 	SETTINGS.bloomType = GetPrivateProfileIntW( L"Basic", L"BloomStyle", 1, wcModulePath );
 	SETTINGS.lightingType = GetPrivateProfileIntW( L"Basic", L"LightingStyle", 1, wcModulePath );
+	SETTINGS.hudScalingIncrease = GetPrivateProfileIntW(L"Basic", L"HudScalingIncrease", 1, wcModulePath);
 
 	// If color grading fails to load, reset it all, but leave vignette separate
 	if ( 

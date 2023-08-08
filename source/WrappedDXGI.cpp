@@ -6,6 +6,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
+#include "HUD_Correction.h"
 
 #include "effects/Metadata.h"
 
@@ -379,6 +380,12 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::Present(UINT SyncInterval, UINT Flags)
                 needsToSave |= ImGui::RadioButton("DX:HR DC", &SETTINGS.lightingType, 0);
                 ImGui::PopID();
 
+                ImGui::PushID(id++);
+                ImGui::Text("HUD scaling limit increase");
+                needsToSave |= ImGui::RadioButton("Enabled", &SETTINGS.hudScalingIncrease, 1); ImGui::SameLine();
+                needsToSave |= ImGui::RadioButton("Disabled", &SETTINGS.hudScalingIncrease, 0);
+                ImGui::PopID();
+
                 ImGui::Separator();
 
                 if ( SETTINGS.colorGradingEnabled )
@@ -440,6 +447,7 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::Present(UINT SyncInterval, UINT Flags)
 
                 if ( needsToSave )
                 {
+                    HUD_Correction::SetIncreaseHUDScalingLimit(SETTINGS.hudScalingIncrease);
                     SaveSettings();
                 }
             }

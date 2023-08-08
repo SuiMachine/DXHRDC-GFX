@@ -53,6 +53,8 @@ struct Settings
 	int bloomType; // 0 - stock, 1 - DXHR
 	int lightingType; // 0 - stock, 1 - stock fixed, 2 - DXHR
 
+	int hudScalingIncrease;
+
 	float colorGradingAttributes[5][4] {};
 };
 
