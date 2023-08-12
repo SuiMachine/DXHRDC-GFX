@@ -115,7 +115,9 @@ void Effects::SaveSettings()
 	WritePrivateProfileStringW( L"Basic", L"LightingStyle", buffer, wcModulePath );
 
 	swprintf_s(buffer, L"%d", SETTINGS.hudScalingLimitIncrease);
-	WritePrivateProfileStringW(L"Basic", L"HudScalingIncrease", buffer, wcModulePath);
+	WritePrivateProfileStringW(L"Basic", L"HudScalingLimitIncrease", buffer, wcModulePath);
+	WritePrivateProfileStructW(L"Basic", L"HudScalingMultiplier", &SETTINGS.hudScalingMultiplier, sizeof(float), wcModulePath);
+
 
 	// Advanced
 	WritePrivateProfileStructW( L"Advanced", L"Attribs", &SETTINGS.colorGradingAttributes[0], sizeof(float) * 3, wcModulePath );
@@ -130,8 +132,12 @@ void Effects::LoadSettings()
 	SETTINGS.colorGradingEnabled = GetPrivateProfileIntW( L"Basic", L"EnableColorGrading", 1, wcModulePath );
 	SETTINGS.bloomType = GetPrivateProfileIntW( L"Basic", L"BloomStyle", 1, wcModulePath );
 	SETTINGS.lightingType = GetPrivateProfileIntW( L"Basic", L"LightingStyle", 1, wcModulePath );
-	SETTINGS.hudScalingLimitIncrease = GetPrivateProfileIntW(L"Basic", L"HudScalingIncrease", 1, wcModulePath);
+	SETTINGS.hudScalingLimitIncrease = GetPrivateProfileIntW(L"Basic", L"HudScalingLimitIncrease", 1, wcModulePath);
+	if (GetPrivateProfileStructW(L"Basic", L"HudScalingMultiplier", &SETTINGS.hudScalingMultiplier, sizeof(float), wcModulePath) == FALSE)
+		SETTINGS.hudScalingMultiplier = 1.f;
+
 	HUD_Correction::getInstance().SetEnable(SETTINGS.hudScalingLimitIncrease != 0);
+	HUD_Correction::getInstance().SetMultiplier(SETTINGS.hudScalingMultiplier);
 
 	// If color grading fails to load, reset it all, but leave vignette separate
 	if ( 
