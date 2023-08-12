@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "Utils/MemoryMgr.h"
 #include "Utils/Patterns.h"
+#include <algorithm>
 
 class HUD_Correction
 {
@@ -66,7 +67,7 @@ private:
 	{
 		GetAddress();
 
-		int newLimitValue = original ? 1280 : (int)(this->Width * Multiplier);
+		int newLimitValue = original ? 1280 : std::clamp((int)(this->Width * Multiplier), 1280, 30720);
 		if (OverrideAddress1_0 != nullptr)
 		{
 			DWORD dwProtect;

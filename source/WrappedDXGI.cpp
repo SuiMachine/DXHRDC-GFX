@@ -389,7 +389,7 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::Present(UINT SyncInterval, UINT Flags)
                 if (SETTINGS.hudScalingLimitIncrease)
                 {
                     ImGui::PushID(id++);
-                    needsToSave |= ImGui::SliderFloat("Scaling", &SETTINGS.hudScalingMultiplier, 0.2f, 1.f);
+                    needsToSave |= ImGui::SliderFloat("Scaling", &SETTINGS.hudScalingMultiplier, 0.5f, 1.f);
                     ImGui::PopID();
                 }
                 ImGui::PopID();
