@@ -255,6 +255,7 @@ DXGISwapChain::DXGISwapChain(ComPtr<IDXGISwapChain> swapChain, ComPtr<DXGIFactor
     // We set up Dear Imgui in swapchain constructor, don't tear it down as it's pointless
     if ( !std::exchange(UI::imguiInitialized, true) )
     {
+       //HUD_Correction::SetResolution(0, 0);
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
@@ -272,6 +273,7 @@ DXGISwapChain::DXGISwapChain(ComPtr<IDXGISwapChain> swapChain, ComPtr<DXGIFactor
 
     // Setup Platform/Renderer bindings
     ImGui_ImplWin32_Init(desc->OutputWindow);
+    HUD_Correction::getInstance().SetResolution(desc->BufferDesc.Width);
 
     ComPtr<ID3D11Device> d3dDevice;
     if ( SUCCEEDED(m_device.As(&d3dDevice)) )
@@ -382,8 +384,14 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::Present(UINT SyncInterval, UINT Flags)
 
                 ImGui::PushID(id++);
                 ImGui::Text("HUD scaling limit increase");
-                needsToSave |= ImGui::RadioButton("Enabled", &SETTINGS.hudScalingIncrease, 1); ImGui::SameLine();
-                needsToSave |= ImGui::RadioButton("Disabled", &SETTINGS.hudScalingIncrease, 0);
+                needsToSave |= ImGui::RadioButton("Enabled", &SETTINGS.hudScalingLimitIncrease, 1); ImGui::SameLine();
+                needsToSave |= ImGui::RadioButton("Disabled", &SETTINGS.hudScalingLimitIncrease, 0);
+                if (SETTINGS.hudScalingLimitIncrease)
+                {
+                    ImGui::PushID(id++);
+                    needsToSave |= ImGui::SliderFloat("Scaling", &SETTINGS.hudScalingMultiplier, 0.2f, 1.f);
+                    ImGui::PopID();
+                }
                 ImGui::PopID();
 
                 ImGui::Separator();
@@ -447,7 +455,8 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::Present(UINT SyncInterval, UINT Flags)
 
                 if ( needsToSave )
                 {
-                    HUD_Correction::SetIncreaseHUDScalingLimit(SETTINGS.hudScalingIncrease);
+                    HUD_Correction::getInstance().SetEnable(SETTINGS.hudScalingLimitIncrease);
+                    HUD_Correction::getInstance().SetMultiplier(SETTINGS.hudScalingMultiplier);
                     SaveSettings();
                 }
             }
@@ -516,6 +525,7 @@ HRESULT STDMETHODCALLTYPE DXGISwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC* pDesc)
 
 HRESULT STDMETHODCALLTYPE DXGISwapChain::ResizeBuffers(UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
 {
+    HUD_Correction::getInstance().SetResolution(Width);
 	return m_orig->ResizeBuffers(BufferCount, Width, Height, NewFormat, SwapChainFlags);
 }
 

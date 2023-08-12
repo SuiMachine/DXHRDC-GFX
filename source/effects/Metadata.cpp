@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <utility>
 #include <array>
+#include "../HUD_Correction.h"
 
 extern wchar_t wcModulePath[MAX_PATH];
 
@@ -113,7 +114,7 @@ void Effects::SaveSettings()
 	swprintf_s( buffer, L"%d", SETTINGS.lightingType );
 	WritePrivateProfileStringW( L"Basic", L"LightingStyle", buffer, wcModulePath );
 
-	swprintf_s(buffer, L"%d", SETTINGS.hudScalingIncrease);
+	swprintf_s(buffer, L"%d", SETTINGS.hudScalingLimitIncrease);
 	WritePrivateProfileStringW(L"Basic", L"HudScalingIncrease", buffer, wcModulePath);
 
 	// Advanced
@@ -129,7 +130,8 @@ void Effects::LoadSettings()
 	SETTINGS.colorGradingEnabled = GetPrivateProfileIntW( L"Basic", L"EnableColorGrading", 1, wcModulePath );
 	SETTINGS.bloomType = GetPrivateProfileIntW( L"Basic", L"BloomStyle", 1, wcModulePath );
 	SETTINGS.lightingType = GetPrivateProfileIntW( L"Basic", L"LightingStyle", 1, wcModulePath );
-	SETTINGS.hudScalingIncrease = GetPrivateProfileIntW(L"Basic", L"HudScalingIncrease", 1, wcModulePath);
+	SETTINGS.hudScalingLimitIncrease = GetPrivateProfileIntW(L"Basic", L"HudScalingIncrease", 1, wcModulePath);
+	HUD_Correction::getInstance().SetEnable(SETTINGS.hudScalingLimitIncrease != 0);
 
 	// If color grading fails to load, reset it all, but leave vignette separate
 	if ( 
